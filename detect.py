@@ -99,8 +99,7 @@ def detect(im, param_vals):
     # To obtain pixel coordinates, the window coordinates are scaled according
     # to the stride size, and pixel coordinates.
     for i, (scaled_im, y_val) in enumerate(zip(scaled_ims, y_vals)):
-        for window_coords in numpy.argwhere(y_val[0, :, :, 0] >
-                                                       -math.log(1./0.99 - 1)):
+        for window_coords in numpy.argwhere(y_val[0, :, :, 0] > -math.log(1./0.99 - 1)):
             letter_probs = (y_val[0,
                                   window_coords[0],
                                   window_coords[1], 1:].reshape(
@@ -182,10 +181,10 @@ if __name__ == "__main__":
     f = numpy.load(sys.argv[2])
     param_vals = [f[n] for n in sorted(f.files, key=lambda s: int(s[4:]))]
 
-    for pt1, pt2, present_prob, letter_probs in post_process(
-                                                  detect(im_gray, param_vals)):
-        pt1 = tuple(reversed(map(int, pt1)))
-        pt2 = tuple(reversed(map(int, pt2)))
+    for pt1, pt2, present_prob, letter_probs in post_process(detect(im_gray, param_vals)):
+        print(type(pt1), pt1)
+        pt1 = tuple(reversed(list(map(int, pt1))))
+        pt2 = tuple(reversed(list(map(int, pt2))))
 
         code = letter_probs_to_code(letter_probs)
 

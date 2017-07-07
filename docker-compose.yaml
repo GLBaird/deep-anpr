@@ -1,0 +1,16 @@
+version: '3'
+services:
+  anpr:
+    build:
+      context: .
+    labels:
+      com.qumodo.anpr.description: "Image Generator and Model for leaning number plates"
+      com.qumodo.anpr.department: "Development"
+      com.qumodo.anpr.author: "Leon Baird"
+      com.qumodo.anpr.project: "Automatic Number Plate Recognition"
+    volumes:
+     - .:/usr/local/anpr
+     ports:
+     - 8888:8888
+    environment:
+     - PYTHONPATH=/usr/local/anpr
