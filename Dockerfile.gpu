@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:latest-devel-py3
+FROM tensorflow/tensorflow:latest-devel-gpu-py3
 
 ENV SRC_DIR=/tmp
 

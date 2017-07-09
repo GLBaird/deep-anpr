@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (c) 2016 Matthew Earl
 # 
@@ -33,6 +33,7 @@ of `detect` to filter using non-maximum suppression.
 __all__ = (
     'detect',
     'post_process',
+    'anpr'
 )
 
 
@@ -47,6 +48,7 @@ import tensorflow as tf
 
 import common
 import model
+import json
 
 
 def make_scaled_ims(im, min_shape):
@@ -174,11 +176,11 @@ def letter_probs_to_code(letter_probs):
     return "".join(common.CHARS[i] for i in numpy.argmax(letter_probs, axis=1))
 
 
-if __name__ == "__main__":
-    im = cv2.imread(sys.argv[1])
+def anpr(filename, weights='weights.npz', output=None):
+    im = cv2.imread(filename)
     im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY) / 255.
-
-    f = numpy.load(sys.argv[2])
+    found = []
+    f = numpy.load(weights)
     param_vals = [f[n] for n in sorted(f.files, key=lambda s: int(s[4:]))]
 
     for pt1, pt2, present_prob, letter_probs in post_process(detect(im_gray, param_vals)):
@@ -191,21 +193,31 @@ if __name__ == "__main__":
         color = (0.0, 255.0, 0.0)
         cv2.rectangle(im, pt1, pt2, color)
 
-        cv2.putText(im,
-                    code,
-                    pt1,
-                    cv2.FONT_HERSHEY_PLAIN, 
-                    1.5,
-                    (0, 0, 0),
-                    thickness=5)
+        found.append({
+            'code': code,
+            'x1': pt1[0],
+            'y1': pt1[1],
+            'x2': pt2[0],
+            'y2': pt2[1]
+        })
 
-        cv2.putText(im,
-                    code,
-                    pt1,
-                    cv2.FONT_HERSHEY_PLAIN, 
-                    1.5,
-                    (255, 255, 255),
-                    thickness=2)
+        if output is not None:
+            cv2.putText(im,
+                        code,
+                        pt1,
+                        cv2.FONT_HERSHEY_PLAIN,
+                        1.5,
+                        (0, 0, 0),
+                        thickness=5)
 
-    cv2.imwrite(sys.argv[3], im)
+            cv2.putText(im,
+                        code,
+                        pt1,
+                        cv2.FONT_HERSHEY_PLAIN,
+                        1.5,
+                        (255, 255, 255),
+                        thickness=2)
 
+    if output is not None:
+        cv2.imwrite(output, im)
+    print("<<{}>>".format(json.dump(output)))
