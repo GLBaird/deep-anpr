@@ -184,7 +184,6 @@ def anpr(filename, weights='weights.npz', output=None):
     param_vals = [f[n] for n in sorted(f.files, key=lambda s: int(s[4:]))]
 
     for pt1, pt2, present_prob, letter_probs in post_process(detect(im_gray, param_vals)):
-        print(type(pt1), pt1)
         pt1 = tuple(reversed(list(map(int, pt1))))
         pt2 = tuple(reversed(list(map(int, pt2))))
 
