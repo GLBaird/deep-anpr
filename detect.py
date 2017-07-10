@@ -220,4 +220,7 @@ def anpr(filename, weights='weights.npz', output=None):
 
     if output is not None:
         cv2.imwrite(output, im)
-    print("<<{}>>".format(json.dump(output)))
+    print("<<{}>>".format(json.dumps(output)))
+
+if __name__ == '__main__':
+    anpr('a.jpg', 'weights.npz', 'test_out.jpg')
